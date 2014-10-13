@@ -21,32 +21,59 @@ function init() {
 
     Canvas.prototype = {
 
-        GenerateWall : function() {
+        generateWall : function(x,y) {
 
-            var deg = [0, 90 ,180 ,270];
-            var pathWall = function() {
-                console.log(canvas);
-                switch(deg[Math.floor(this.getRandom(0,4))]) {
-                    case 0:
-                        return 100;
-                        break;
+            var degY = [0,180];
+            var degX = [90,270];
+
+            var pathWallX = function() {
+
+                switch(degX[Math.floor(this.getRandom(0,2))]) {
                     case 90:
-                        return 200;
-                        break;
-                    case 180:
-                        return 300;
+                        return x+=20;
                         break;
                     case 270:
-                        return 400;
+                        return x-=20;
                         break;
                 }
             };
 
-            this.context.fillStyle = "rgba(250, 0, 0, 1)";
+            var pathWallY = function() {
+
+                switch(degY[Math.floor(this.getRandom(0,2))]) {
+                    case 0:
+                        return y +=20;
+                        break;
+                    case 180:
+                        return y-=20;
+                        break;
+                }
+
+            }
+
+
+            this.context.fillStyle = "rgba(0, 0, 0, 1)";
             this.context.beginPath();
-            this.context.moveTo(20, 20);
-            this.context.lineTo(20, pathWall.call(canvas));
+            this.context.moveTo(x, y);
+            Math.floor(this.getRandom(0,2)) == 1 ? this.context.lineTo(x, pathWallY.call(canvas,y)) : this.context.lineTo(pathWallX.call(canvas,x), y);
             this.context.stroke();
+
+        },
+
+        generateMaze: function(h) {
+
+            var i = 20;
+            var h = h !== undefined ? h : 20;
+
+            for(i; i <= this.canvas.width-20; i += 20) {
+                this.generateWall(i,h);
+
+                // recursion
+                if(i == this.canvas.width-20 && h < this.canvas.height-20) {
+                    h +=20;
+                    this.generateMaze(h);
+                }
+            }
         },
 
         fieldPoints : function(h) {
@@ -67,14 +94,13 @@ function init() {
         },
 
         getRandom : function(min, max) {
-            return Math.random() * (max - min) + min; //возвращает случайное число в диапозоне
+            return Math.random() * (max - min) + min;
         }
     }
 
     var canvas = new Canvas("canvasContainer");
     var cnv = canvas.context;
-    canvas.GenerateWall();
-    canvas.fieldPoints();
+    canvas.generateMaze();
 }
 
 window.addEventListener('load', init());
