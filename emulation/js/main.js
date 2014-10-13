@@ -30,10 +30,14 @@ function init() {
 
                 switch(degX[Math.floor(this.getRandom(0,2))]) {
                     case 90:
-                        return x+=20;
+                        if(x !== this.canvas.width-20)
+                            return x += 20;
+                        else x = this.canvas.width-20;
                         break;
                     case 270:
-                        return x-=20;
+                        if(x !== 20)
+                            return x -= 20;
+                        else x = 20;
                         break;
                 }
             };
@@ -42,10 +46,14 @@ function init() {
 
                 switch(degY[Math.floor(this.getRandom(0,2))]) {
                     case 0:
-                        return y +=20;
+                        if(y !== this.canvas.height-20)
+                            return y +=20;
+                        else y = this.canvas.height-20;
                         break;
                     case 180:
-                        return y-=20;
+                        if(y !== 20)
+                            return y-=20;
+                        else y = 20;
                         break;
                 }
 
