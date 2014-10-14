@@ -21,6 +21,10 @@ function init() {
 
     Canvas.prototype = {
 
+        madeI : 0,
+        start : Math.floor(Math.random() * 95),
+        end   : Math.floor(Math.random() * 95),
+
         generateWall : function(x,y) {
 
             var degY = [0,180];
@@ -28,7 +32,7 @@ function init() {
 
             var pathWallX = function() {
 
-                switch(degX[Math.floor(this.getRandom(0,2))]) {
+                switch(degX[this.getRandom(0,2)]) {
                     case 90:
                         if(x !== this.canvas.width-20)
                             return x += 20;
@@ -44,7 +48,7 @@ function init() {
 
             var pathWallY = function() {
 
-                switch(degY[Math.floor(this.getRandom(0,2))]) {
+                switch(degY[this.getRandom(0,2)]) {
                     case 0:
                         if(y !== this.canvas.height-20)
                             return y +=20;
@@ -60,10 +64,10 @@ function init() {
             }
 
 
-            this.context.fillStyle = "rgba(0, 0, 0, 1)";
+            this.context.strokeStyle = "rgb(0, 0, 0)";
             this.context.beginPath();
             this.context.moveTo(x, y);
-            Math.floor(this.getRandom(0,2)) == 1 ? this.context.lineTo(x, pathWallY.call(canvas,y)) : this.context.lineTo(pathWallX.call(canvas,x), y);
+            this.getRandom(0,2) == 1 ? this.context.lineTo(x, pathWallY.call(canvas,y)) : this.context.lineTo(pathWallX.call(canvas,x), y);
             this.context.stroke();
 
         },
@@ -74,13 +78,38 @@ function init() {
             var h = h !== undefined ? h : 20;
 
             for(i; i <= this.canvas.width-20; i += 20) {
-                this.generateWall(i,h);
+
+                if(i === this.end * 20 || i === this.start * 20 && this.madeI < 2)
+                    this.generateStarnEnd(i,h);
+                else this.generateWall(i,h);
 
                 // recursion
                 if(i == this.canvas.width-20 && h < this.canvas.height-20) {
                     h +=20;
                     this.generateMaze(h);
                 }
+            }
+        },
+
+        generateStarnEnd : function(x,y) {
+            if(y == 20) {
+                this.context.beginPath();
+                this.context.strokeStyle = "#f00";
+                this.context.moveTo(x,y);
+                this.context.lineTo(x+20,y);
+                this.context.stroke();
+                this.madeI++;
+                console.log(this.canvas.height-20, y);
+            }
+
+            if(y == this.canvas.height-20) {
+                this.context.beginPath();
+                this.context.strokeStyle = "#f00";
+                this.context.moveTo(x,y);
+                this.context.lineTo(x+20,y);
+                this.context.stroke();
+                this.madeI++;
+                console.log(this.canvas.height-20, y);
             }
         },
 
@@ -102,13 +131,14 @@ function init() {
         },
 
         getRandom : function(min, max) {
-            return Math.random() * (max - min) + min;
+            return Math.floor(Math.random() * (max - min) + min);
         }
     }
 
     var canvas = new Canvas("canvasContainer");
     var cnv = canvas.context;
     canvas.generateMaze();
+    console.log((canvas.canvas.width-20)/20);
 }
 
 window.addEventListener('load', init());
