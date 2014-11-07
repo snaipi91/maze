@@ -1,37 +1,37 @@
 function init() {
 
     /*
-    *
-    * 3610 generate Object (points)
-    *
-    * methods
-    *
-    *   GenerateWall() - generate a corner of the wall
-    *   FieldPoints() - Developer.Function Show points
-    *   getRandom() - return a random number (arguments min and max)
-    *   generateMaze() - главный цикл генерации
-    *   wrapperMaze() - генерация обертки лабиринта
-    *   vectorGenerate() - определяет направление вектора
-    *   createObjMatrix() - добавляет объект "точка"
-    *   drawPath() - проверяет заданные алгоритмом точки, добавляет пути в массив, передает выполнение casePath()
-    *   casePath() - строит путь взависимости от массива
-    *
-    *
-    * properties
-    *
-    *   debug [false or true]
-    *   madeI - static variable(enterExit)
-    *   enter and exit - static variable для генерации входа и выхода
-    *   arrPath - массив направлений
-    *
-    * */
+     *
+     * 3610 generate Object (points)
+     *
+     * methods
+     *
+     *   GenerateWall() - generate a corner of the wall
+     *   FieldPoints() - Developer.Function Show points
+     *   getRandom() - return a random number (arguments min and max)
+     *   generateMaze() - главный цикл генерации
+     *   wrapperMaze() - генерация обертки лабиринта
+     *   vectorGenerate() - определяет направление вектора
+     *   createObjMatrix() - добавляет объект "точка"
+     *   drawPath() - проверяет заданные алгоритмом точки, добавляет пути в массив, передает выполнение casePath()
+     *   casePath() - строит путь взависимости от массива
+     *
+     *
+     * properties
+     *
+     *   debug [false or true]
+     *   madeI - static variable(enterExit)
+     *   enter and exit - static variable для генерации входа и выхода
+     *   arrPath - массив направлений
+     *
+     * */
 
     // создаем canvas объект
     var Canvas = function(id) {
         this.canvas = document.getElementById(id);
         this.context = this.canvas.getContext('2d');
         this.canvas.width = screen.availWidth;
-        this.canvas.height = Math.floor(screen.availHeight/4 + screen.availHeight/2);
+        this.canvas.height = 780;
         this.context.fillStyle = "rgb(0,0,0)";
 //        this.context.strokeRect(20, 20, this.canvas.width-40, this.canvas.height-40);
     }
@@ -43,8 +43,8 @@ function init() {
         arrPath : [],
         matrix : [],
         vector : '',
-        enter : Math.floor(Math.random() * 95),
-        exit  : Math.floor(Math.random() * 95),
+        enter : Math.floor(Math.random() * (parseInt(screen.availWidth/20) - 1)),
+        exit  : Math.floor(Math.random() * (parseInt(screen.availWidth/20) - 1)),
 
         log : function(description, obj) {
             if(this.debug)
@@ -60,7 +60,7 @@ function init() {
             this.context.strokeStyle = "rgb(0, 0, 0)";
             this.context.beginPath();
             this.context.moveTo(x, y);
-            x !== 1900 ? this.context.lineTo(x + 20, y) : false;
+            x !== screen.availWidth-20 ? this.context.lineTo(x + 20, y) : false;
             this.context.stroke();
 
             this.createObjMatrix(x, y, true, 'right');
@@ -95,23 +95,23 @@ function init() {
                     this.matrix[this.matrix.length-1].vector = 'bottom';
                     this.context.lineTo(x, y + 20);
                     this.log('массив : ', this.arrPath);
-                break;
+                    break;
 
                 case 90 :
                     this.matrix[this.matrix.length-1].vector = 'right';
                     this.context.lineTo(x + 20, y);
-                break;
+                    break;
 
                 case 180 :
                     this.matrix[this.matrix.length-1].vector = 'top';
                     this.context.lineTo(x, y - 20);
                     this.log('массив : ', this.arrPath);
-                break;
+                    break;
 
                 case 270 :
                     this.matrix[this.matrix.length-1].vector = 'left';
                     this.context.lineTo(x - 20, y);
-                break;
+                    break;
             }
         },
 
@@ -150,9 +150,11 @@ function init() {
             var i = 20;
             var h = h !== undefined ? h : 20;
 
+            canvas.log("элемент", this.matrix);
+
             for(i; i <= this.canvas.width-20; i += 20) {
 
-                if(h !== 20 && h !== 760 && i !== 20 && i !== 1900) {
+                if(h !== 20 && h !== 760 && i !== 20 && i !== screen.availWidth-20) {
                     this.createObjMatrix(i, h, false, null);
                 }
 
@@ -164,11 +166,11 @@ function init() {
                 } else {
 
                     h === 20 || h === 760 ? this.wrapperMazeX(i,h) : false;
-                    i === 20 || i === 1900 ? this.wrapperMazeY(i,h) : false;
+                    i === 20 || i === screen.availWidth-20 ? this.wrapperMazeY(i,h) : false;
 
                 }
 
-                if(i !== 20 && i !==1900 && h !== 20 && h !== 760)
+                if(i !== 20 && i !== screen.availWidth-20 && h !== 20 && h !== 760)
                     this.generateWall(i,h);
 
                 // recursion
@@ -226,9 +228,9 @@ function init() {
                 // динамическое создание свойства
                 this.matrix[this.matrix.length-1]['points'] = {
                     l1 : this.matrix[this.matrix.length-1].w >= 40  ? this.matrix[this.matrix.length-2].vector : null,
-                    l2 : this.matrix[this.matrix.length-1].h >= 40 && this.matrix[this.matrix.length-1].w >= 40 ? this.matrix[this.matrix.length-97].vector : null,
-                    l3 : this.matrix[this.matrix.length-1].h >= 40 && this.matrix[this.matrix.length-1].w >= 40 ? this.matrix[this.matrix.length-96].vector : null,
-                    l4 : this.matrix[this.matrix.length-1].h >= 40 && this.matrix[this.matrix.length-1].w >= 40 ? this.matrix[this.matrix.length-95].vector : null
+                    l2 : this.matrix[this.matrix.length-1].h >= 40 && this.matrix[this.matrix.length-1].w >= 40 ? this.matrix[this.matrix.length - (Math.ceil(screen.availWidth/20) + 1)].vector : null,
+                    l3 : this.matrix[this.matrix.length-1].h >= 40 && this.matrix[this.matrix.length-1].w >= 40 ? this.matrix[this.matrix.length - (Math.ceil(screen.availWidth/20))].vector : null,
+                    l4 : this.matrix[this.matrix.length-1].h >= 40 && this.matrix[this.matrix.length-1].w >= 40 ? this.matrix[this.matrix.length - (Math.ceil(screen.availWidth/20) - 1)].vector : null
                 }
 
             }
@@ -241,7 +243,7 @@ function init() {
     var cnv = canvas.context;
     canvas.generateMaze();
     canvas.log("матрица заполнена : ", canvas.matrix);
-//    canvas.log("Canvas элемент", canvas.matrix[canvas.matrix.length-96].w);
+    canvas.log("Canvas элемент", canvas);
 }
 
 window.addEventListener('load', init());
